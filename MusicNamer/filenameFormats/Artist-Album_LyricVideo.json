@@ -1,0 +1,34 @@
+﻿{
+   "name":"Artist - Album [Lyric Video]",
+   "delimiters":[
+    "-",
+    "[",
+    "]"
+   ],
+   "positions":[
+      {
+         "0":{
+            "type":2,
+            "expected":""
+         }
+      },
+      {
+         "1":{
+            "type":1,
+            "expected":""
+         }
+      },
+      {
+         "2":{
+            "type":8,
+            "expected":"Lyric Video"
+         }
+      },
+      {
+         "3":{
+            "type":0,
+            "expected":""
+         }
+      }
+   ]
+}
