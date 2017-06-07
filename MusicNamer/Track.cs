@@ -15,6 +15,8 @@ namespace MusicNamer
 
         public int artistLevDistance;
         public int trackLevDistance;
+        public string dataFrom;
+        public string genreFrom;
 
         public Track()
         {
@@ -70,7 +72,6 @@ namespace MusicNamer
         public const int LABEL = 7;
         public const int OTHER = 8;
         public const int COMMENT = 9;
-        
-
+       
     }
 }

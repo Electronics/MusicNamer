@@ -45,6 +45,10 @@
       <HintPath>..\packages\taglib.2.1.0.0\lib\policy.2.0.taglib-sharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SmartFormat, Version=2.0.0.0, Culture=neutral, PublicKeyToken=568866805651201f, processorArchitecture=MSIL">
+      <HintPath>..\packages\SmartFormat.NET.2.0.0.0\lib\net45\SmartFormat.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -97,19 +101,22 @@
     <EmbeddedResource Include="SettingsPopup.resx">
       <DependentUpon>SettingsPopup.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="filenameFormats\Artist-Album - Comment.json">
+    <None Include="apis\apple.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="filenameFormats\Artist-Album_LyricVideo.json">
+    <None Include="extractors\Artist-Album - Comment.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="filenameFormats\Artist-Album.json">
+    <None Include="extractors\Artist-Album_LyricVideo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="filenameFormats\monstercat.json">
+    <None Include="extractors\Artist-Album.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="filenameFormats\Monstercat2.json">
+    <None Include="extractors\monstercat.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="extractors\Monstercat2.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

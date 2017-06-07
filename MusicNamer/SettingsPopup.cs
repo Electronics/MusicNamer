@@ -25,7 +25,7 @@ namespace MusicNamer
             string[] disabledExtractors = new String[sc_extractors.Count];
             sc_extractors.CopyTo(disabledExtractors,0);
 
-            string[] tokenExtractorFileArray_Extractors = Directory.GetFiles("filenameFormats/", "*.json", SearchOption.AllDirectories);
+            string[] tokenExtractorFileArray_Extractors = Directory.GetFiles("extractors/", "*.json", SearchOption.AllDirectories);
             foreach (string s in tokenExtractorFileArray_Extractors)
             {
                 checkedListBox_disabledExtractors.Items.Add(Path.GetFileName(s));
@@ -40,12 +40,12 @@ namespace MusicNamer
             // ---------------end of this bit
 
             // find out what apis we have and compare against settings list
-            System.Collections.Specialized.StringCollection sc_APIs = Properties.Settings.Default.disabledExtractors;
+            System.Collections.Specialized.StringCollection sc_APIs = Properties.Settings.Default.disabledAPIs;
             if (sc_APIs == null) sc_APIs = new System.Collections.Specialized.StringCollection();
             string[] disabledAPIs = new String[sc_APIs.Count];
             sc_APIs.CopyTo(disabledAPIs, 0);
 
-            string[] tokenExtractorFileArray_APIs = Directory.GetFiles("filenameFormats/", "*.json", SearchOption.AllDirectories);
+            string[] tokenExtractorFileArray_APIs = Directory.GetFiles("apis/", "*.json", SearchOption.AllDirectories);
             foreach (string s in tokenExtractorFileArray_APIs)
             {
                 checkedListBox_disabledAPIs.Items.Add(Path.GetFileName(s));
@@ -68,10 +68,17 @@ namespace MusicNamer
 
             Properties.Settings.Default.exportToFolders = checkBox_exportFolders.Checked;
             Properties.Settings.Default.disabledExtractors = new System.Collections.Specialized.StringCollection();
-            if (checkedListBox_disabledExtractors.CheckedIndices.Count != 0)
+            if (checkedListBox_disabledExtractors.CheckedItems.Count != 0)
             {
                 string[] disabledExtractors = checkedListBox_disabledExtractors.CheckedItems.OfType<string>().ToArray();
                 Properties.Settings.Default.disabledExtractors.AddRange(disabledExtractors);
+            }
+
+            Properties.Settings.Default.disabledAPIs = new System.Collections.Specialized.StringCollection();
+            if(checkedListBox_disabledAPIs.CheckedItems.Count != 0)
+            {
+                string[] disabledAPIs = checkedListBox_disabledAPIs.CheckedItems.OfType<string>().ToArray();
+                Properties.Settings.Default.disabledAPIs.AddRange(disabledAPIs);
             }
             
             this.Close();

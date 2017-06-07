@@ -1,0 +1,9 @@
+﻿{
+  "name": "apple music",
+  "url": "https://itunes.apple.com/search",
+  "requestParam": "term",
+  "extraParams": {
+    "tokenID": "hello",
+    "clientID":  "the_game"
+  }
+}
