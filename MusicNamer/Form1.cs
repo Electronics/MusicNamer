@@ -115,7 +115,7 @@ namespace MusicNamer
                 track.genre = (string)r.Cells["Genre"].Value;
                 track.album = (string)r.Cells["Album"].Value;
                 
-                // TOMMOROW: Need to add full filepath to hidden column, then copy, then add tags
+                // TOMMOROW: Need to add full filepath to hidden column, then copy, then add tags. Also need to add disable extractors
             }
         }
 
