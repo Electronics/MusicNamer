@@ -13,12 +13,13 @@ namespace MusicNamer
         public Track track;
         public List<Track> suggestedTracks;
         public string shortFilename;
+        public string longFilename;
         public int mappedStatus;
 
-        public TrackProperties(string shortFilename, Track track)
+        public TrackProperties(string longFilename, Track track)
         {
             this.track = track;
-            this.shortFilename = shortFilename;
+            this.longFilename = longFilename;
         }
 
         public bool addTrackIfNotNull(Track t)

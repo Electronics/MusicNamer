@@ -35,13 +35,15 @@
             this.label1 = new System.Windows.Forms.Label();
             this.checkedListBox_disabledAPIs = new System.Windows.Forms.CheckedListBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.checkBox_importFromSubfolders = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // button_ok
             // 
-            this.button_ok.Location = new System.Drawing.Point(147, 321);
+            this.button_ok.Location = new System.Drawing.Point(110, 261);
+            this.button_ok.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button_ok.Name = "button_ok";
-            this.button_ok.Size = new System.Drawing.Size(100, 35);
+            this.button_ok.Size = new System.Drawing.Size(75, 28);
             this.button_ok.TabIndex = 0;
             this.button_ok.Text = "OK";
             this.button_ok.UseVisualStyleBackColor = true;
@@ -49,9 +51,10 @@
             // 
             // button_cancel
             // 
-            this.button_cancel.Location = new System.Drawing.Point(268, 321);
+            this.button_cancel.Location = new System.Drawing.Point(201, 261);
+            this.button_cancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button_cancel.Name = "button_cancel";
-            this.button_cancel.Size = new System.Drawing.Size(100, 35);
+            this.button_cancel.Size = new System.Drawing.Size(75, 28);
             this.button_cancel.TabIndex = 1;
             this.button_cancel.Text = "Cancel";
             this.button_cancel.UseVisualStyleBackColor = true;
@@ -60,9 +63,10 @@
             // checkBox_exportFolders
             // 
             this.checkBox_exportFolders.AutoSize = true;
-            this.checkBox_exportFolders.Location = new System.Drawing.Point(12, 12);
+            this.checkBox_exportFolders.Location = new System.Drawing.Point(11, 28);
+            this.checkBox_exportFolders.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBox_exportFolders.Name = "checkBox_exportFolders";
-            this.checkBox_exportFolders.Size = new System.Drawing.Size(206, 21);
+            this.checkBox_exportFolders.Size = new System.Drawing.Size(155, 17);
             this.checkBox_exportFolders.TabIndex = 2;
             this.checkBox_exportFolders.Text = "Export Files to Artist Folders";
             this.checkBox_exportFolders.UseVisualStyleBackColor = true;
@@ -70,42 +74,58 @@
             // checkedListBox_disabledExtractors
             // 
             this.checkedListBox_disabledExtractors.FormattingEnabled = true;
-            this.checkedListBox_disabledExtractors.Location = new System.Drawing.Point(12, 56);
+            this.checkedListBox_disabledExtractors.Location = new System.Drawing.Point(11, 64);
+            this.checkedListBox_disabledExtractors.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkedListBox_disabledExtractors.Name = "checkedListBox_disabledExtractors";
-            this.checkedListBox_disabledExtractors.Size = new System.Drawing.Size(478, 106);
+            this.checkedListBox_disabledExtractors.Size = new System.Drawing.Size(360, 79);
             this.checkedListBox_disabledExtractors.TabIndex = 3;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 36);
+            this.label1.Location = new System.Drawing.Point(11, 47);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(130, 17);
+            this.label1.Size = new System.Drawing.Size(98, 13);
             this.label1.TabIndex = 4;
             this.label1.Text = "Disabled Extractors";
             // 
             // checkedListBox_disabledAPIs
             // 
             this.checkedListBox_disabledAPIs.FormattingEnabled = true;
-            this.checkedListBox_disabledAPIs.Location = new System.Drawing.Point(12, 197);
+            this.checkedListBox_disabledAPIs.Location = new System.Drawing.Point(11, 178);
+            this.checkedListBox_disabledAPIs.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkedListBox_disabledAPIs.Name = "checkedListBox_disabledAPIs";
-            this.checkedListBox_disabledAPIs.Size = new System.Drawing.Size(478, 106);
+            this.checkedListBox_disabledAPIs.Size = new System.Drawing.Size(360, 79);
             this.checkedListBox_disabledAPIs.TabIndex = 5;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 177);
+            this.label2.Location = new System.Drawing.Point(9, 162);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(95, 17);
+            this.label2.Size = new System.Drawing.Size(73, 13);
             this.label2.TabIndex = 6;
             this.label2.Text = "Disabled APIs";
             // 
+            // checkBox_importFromSubfolders
+            // 
+            this.checkBox_importFromSubfolders.AutoSize = true;
+            this.checkBox_importFromSubfolders.Location = new System.Drawing.Point(11, 11);
+            this.checkBox_importFromSubfolders.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBox_importFromSubfolders.Name = "checkBox_importFromSubfolders";
+            this.checkBox_importFromSubfolders.Size = new System.Drawing.Size(158, 17);
+            this.checkBox_importFromSubfolders.TabIndex = 7;
+            this.checkBox_importFromSubfolders.Text = "Import Files from SubFolders";
+            this.checkBox_importFromSubfolders.UseVisualStyleBackColor = true;
+            // 
             // SettingsPopup
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(520, 368);
+            this.ClientSize = new System.Drawing.Size(390, 299);
+            this.Controls.Add(this.checkBox_importFromSubfolders);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.checkedListBox_disabledAPIs);
             this.Controls.Add(this.label1);
@@ -113,6 +133,7 @@
             this.Controls.Add(this.checkBox_exportFolders);
             this.Controls.Add(this.button_cancel);
             this.Controls.Add(this.button_ok);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "SettingsPopup";
             this.Text = "SettingsPopup";
             this.ResumeLayout(false);
@@ -129,5 +150,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckedListBox checkedListBox_disabledAPIs;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox checkBox_importFromSubfolders;
     }
 }

@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
+// TOMMOROW: Need to add tags. and ensure on update of the datagridview that two filenames are not the same
+// split artists properly in tags
+// amke tags actually work
 
 namespace MusicNamer
 {
@@ -46,7 +49,7 @@ namespace MusicNamer
                     Console.WriteLine();
                 }
             }*/
-            textBox_folder.Text = @"Y:\junk\outtemp";
+            textBox_folder.Text = @"C:\Users\Laurie\Documents\outtemp";
             SetupDataGridView();
             toolStripStatusLabel1.Text = $"Waiting for folder selection...";
 
@@ -95,7 +98,7 @@ namespace MusicNamer
             }
         }
 
-        private void button_run_Click(object sender, EventArgs e)
+        private void button_export_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists(textBox_outputFolder.Text))
             {
@@ -110,19 +113,52 @@ namespace MusicNamer
 
             foreach (DataGridViewRow r in dataGridView1.Rows)
             {
-                track.artist = (string)r.Cells["Artist"].Value;
-                track.track = (string)r.Cells["Track"].Value;
-                track.genre = (string)r.Cells["Genre"].Value;
-                track.album = (string)r.Cells["Album"].Value;
-                
-                // TOMMOROW: Need to add full filepath to hidden column, then copy, then add tags. Also need to add disable extractors
+                TrackProperties tp = new TrackProperties((string)r.Cells["Longfilename"].Value, new Track());
+
+                tp.track.artist = (string)r.Cells["Artist"].Value;
+                tp.track.track = (string)r.Cells["Track"].Value;
+                tp.track.genre = (string)r.Cells["Genre"].Value;
+                tp.track.album = (string)r.Cells["Album"].Value;
+                tp.shortFilename = (string)r.Cells["Output Filename"].Value;
+
+                string pathTofile;
+                try
+                {
+                    if (Properties.Settings.Default.exportToFolders)
+                    {
+                        Directory.CreateDirectory(textBox_outputFolder.Text + "/" + tp.track.artist);
+                        pathTofile = textBox_outputFolder.Text + "/" + tp.track.artist + "/" + tp.shortFilename + ".mp3";
+                        File.Copy(tp.longFilename, pathTofile);
+                    }
+                    else
+                    {
+                        pathTofile = textBox_outputFolder.Text + "/" + tp.shortFilename + ".mp3";
+                        File.Copy(tp.longFilename, pathTofile);
+                    }
+                } catch (IOException)
+                {
+                    MessageBox.Show("Two or more output filenames are the same!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Console.WriteLine("Two or more output filenames are the same!");
+                    return;
+                }
+
+                // now tag stuff
+                TagLib.File file = TagLib.File.Create(pathTofile);
+                file.Tag.Album = tp.track.album;
+                file.Tag.Genres = new[] { tp.track.genre };
+                file.Tag.AlbumArtists = new[] { tp.track.artist };
+
+                file.Save();
+                file.Dispose();
+
             }
+            MessageBox.Show("Sucessfully outputted all files", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void SetupDataGridView()
         {
             dataGridView1.RowHeadersVisible = true;
-            dataGridView1.ColumnCount = 8;
+            dataGridView1.ColumnCount = 9;
             dataGridView1.AllowUserToResizeColumns = true;
             dataGridView1.Columns[0].Name = "Input Filename";
             dataGridView1.Columns[0].ReadOnly = true;
@@ -133,13 +169,15 @@ namespace MusicNamer
             dataGridView1.Columns[5].Name = "Genre";
             dataGridView1.Columns[6].Name = "DataFrom";
             dataGridView1.Columns[7].Name = "TagStatus";
+            dataGridView1.Columns[8].Name = "LongFilename";
+            dataGridView1.Columns[8].Visible = false;
 
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
         private void runExtractor()
         {
-            string[] fileArray = Directory.GetFiles(textBox_folder.Text, "*.mp3", SearchOption.AllDirectories);
+            string[] fileArray = Directory.GetFiles(textBox_folder.Text, "*.mp3", Properties.Settings.Default.importFromSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
             Console.WriteLine($"Found {fileArray.Length} mp3 files");
 
@@ -148,10 +186,19 @@ namespace MusicNamer
             //------------------------------------------------------------------------------
 
             List<TokenExtractor> teList = new List<TokenExtractor>();
+            
             string[] tokenExtractorFileArray = Directory.GetFiles("extractors/", "*.json", SearchOption.AllDirectories);
             TokenExtractorConverter teConverter = new TokenExtractorConverter();
             foreach (string s in tokenExtractorFileArray)
             {
+                if (Properties.Settings.Default.disabledExtractors != null)
+                {
+                    if (Properties.Settings.Default.disabledExtractors.Contains(Path.GetFileName(s)))
+                    {
+                        Console.WriteLine($"Ommitting json file {Path.GetFileName(s)}");
+                        continue;
+                    }
+                }
                 using (StreamReader r = new StreamReader(s))
                 {
                     string json = r.ReadToEnd();
@@ -190,7 +237,8 @@ namespace MusicNamer
             Dictionary<string, TrackProperties> inputFiles = new Dictionary<string, TrackProperties>();
             foreach (string s in fileArray)
             {
-                inputFiles[s] = new TrackProperties(Path.GetFileNameWithoutExtension(s), new Track());
+                inputFiles[s] = new TrackProperties(s, new Track());
+                inputFiles[s].shortFilename = Path.GetFileNameWithoutExtension(s);
             }
 
             toolStripStatusLabel1.Text = $"Extracting/Finding tags...";
@@ -317,8 +365,8 @@ namespace MusicNamer
             dataGridView1.Rows.Clear();
             foreach (KeyValuePair<string, TrackProperties> inputFile in inputFiles)
             {
-                dataGridView1.Rows.Add(new[] { inputFile.Value.shortFilename, "Formatted", inputFile.Value.track.track,
-                        inputFile.Value.track.artist, inputFile.Value.track.album, inputFile.Value.track.genre, inputFile.Value.track.dataFrom});
+                dataGridView1.Rows.Add(new[] { inputFile.Value.shortFilename, "", inputFile.Value.track.track,
+                        inputFile.Value.track.artist, inputFile.Value.track.album, inputFile.Value.track.genre, inputFile.Value.track.dataFrom,"", inputFile.Value.longFilename});
                 if (inputFile.Value.track.genreFrom == "API")
                 {
                     dataGridView1[5, dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None)].Style.BackColor = System.Drawing.Color.CadetBlue;
@@ -532,6 +580,20 @@ namespace MusicNamer
                 }
             }
             return true;
+        }
+
+        private void button_outputFolder_Click(object sender, EventArgs e)
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    Console.WriteLine($"Folder selected: {fbd.SelectedPath}");
+                    textBox_outputFolder.Text = fbd.SelectedPath;
+                }
+            }
         }
     }
 
