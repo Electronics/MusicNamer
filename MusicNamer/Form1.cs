@@ -5,10 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using TagLib;
 
-// TOMMOROW: Need to add tags
+// TODO:
 // split artists properly in tags
-// amke tags actually work
+// dealing with featured artists
+// feat. in the artist segment
+// outputting to subfolder-artist/subfolder-album/track
 
 namespace MusicNamer
 {
@@ -140,12 +143,12 @@ namespace MusicNamer
                     {
                         Directory.CreateDirectory(textBox_outputFolder.Text + "/" + tp.track.artist);
                         pathTofile = textBox_outputFolder.Text + "/" + tp.track.artist + "/" + tp.shortFilename + ".mp3";
-                        File.Copy(tp.longFilename, pathTofile);
+                        System.IO.File.Copy(tp.longFilename, pathTofile);
                     }
                     else
                     {
                         pathTofile = textBox_outputFolder.Text + "/" + tp.shortFilename + ".mp3";
-                        File.Copy(tp.longFilename, pathTofile);
+                        System.IO.File.Copy(tp.longFilename, pathTofile);
                     }
                 } catch (IOException err)
                 {
@@ -157,13 +160,30 @@ namespace MusicNamer
 
                 // now tag stuff
                 TagLib.File file = TagLib.File.Create(pathTofile);
-                if (!tp.isNullOrEmpty(tp.track.track)) file.Tag.Title = tp.track.track;
-                if (!tp.isNullOrEmpty(tp.track.album)) file.Tag.Album = tp.track.album;
-                if(!tp.isNullOrEmpty(tp.track.genre)) file.Tag.Genres = new[] { tp.track.genre };
+                Tag tagv1 = file.GetTag(TagTypes.Id3v1);
+                if (!tp.isNullOrEmpty(tp.track.track))
+                {
+                    file.Tag.Title = tp.track.track;
+                    tagv1.Title = tp.track.track;
+                }
+                if (!tp.isNullOrEmpty(tp.track.album))
+                {
+                    file.Tag.Album = tp.track.album;
+                    tagv1.Album = tp.track.album;
+                }
+                if (!tp.isNullOrEmpty(tp.track.genre))
+                {
+                    file.Tag.Genres = new[] { tp.track.genre };
+                    tagv1.Genres = new[] { tp.track.genre };
+                }
                 if (!tp.isNullOrEmpty(tp.track.artist))
                 {
-                    file.Tag.AlbumArtists = new[] { tp.track.artist };
-                    file.Tag.Artists = new[] { tp.track.artist };
+                    string[] artists = tp.track.artist.Split('&');
+                    foreach (string artist in artists) artist.Trim();
+                    file.Tag.AlbumArtists = artists;
+                    file.Tag.Artists = artists;
+                    tagv1.AlbumArtists = artists;
+                    tagv1.Artists = artists;
                 }
                 file.Save();
                 file.Dispose();
@@ -607,6 +627,16 @@ namespace MusicNamer
             }
             return true;
         }
+        private bool isNullOrEmpty(object o)
+        {
+            if(o != null)
+            {
+                return isNullOrEmpty(o.ToString().Trim());
+            } else
+            {
+                return true;
+            }
+        }
 
         private void button_outputFolder_Click(object sender, EventArgs e)
         {
@@ -622,21 +652,13 @@ namespace MusicNamer
             }
         }
 
-        public int checkOutputFilenames() // returns true if badfilename
+        private int checkOutputFilenames() // returns true if badfilename
         {
             if (dataGridView1.RowCount == 0)
             {
                 return 0;
             }
-            /*dataGridView1.Columns[0].Name = "Input Filename";
-            dataGridView1.Columns[0].ReadOnly = true;
-            dataGridView1.Columns[1].Name = "Output Filename";
-            dataGridView1.Columns[2].Name = "Track";
-            dataGridView1.Columns[3].Name = "Artist";
-            dataGridView1.Columns[4].Name = "Album";
-            dataGridView1.Columns[5].Name = "Genre";
-            dataGridView1.Columns[6].Name = "DataFrom";
-            dataGridView1.Columns[7].Name = "TagStatus";*/
+
             bool badfilename = false;
             bool duplicateFilename = false;
             List<string> filenames = new List<string>();
@@ -678,10 +700,46 @@ namespace MusicNamer
             if (badfilename) return 1;
             if (duplicateFilename) return 2;
             return 0;
-    }
+        }
+
+        private void updateMappedStatus()
+        {
+            /*dataGridView1.Columns[0].Name = "Input Filename";
+            dataGridView1.Columns[0].ReadOnly = true;
+            dataGridView1.Columns[1].Name = "Output Filename";
+            dataGridView1.Columns[2].Name = "Track";
+            dataGridView1.Columns[3].Name = "Artist";
+            dataGridView1.Columns[4].Name = "Album";
+            dataGridView1.Columns[5].Name = "Genre";
+            dataGridView1.Columns[6].Name = "DataFrom";
+            dataGridView1.Columns[7].Name = "TagStatus";*/
+            if (dataGridView1.RowCount == 0) return;
+            foreach (DataGridViewRow r in dataGridView1.Rows)
+            {
+                int score = 0;
+                // re-implementation of the checkMapStatus from trackproperties as generating a new TP would take a while
+                if (!isNullOrEmpty(r.Cells["Artist"].Value)) score++;
+                if (!isNullOrEmpty(r.Cells["Track"].Value)) score++;
+                if (!isNullOrEmpty(r.Cells["Album"].Value)) score++;
+                if (!isNullOrEmpty(r.Cells["Genre"].Value)) score++;
+                if (score > 3)
+                {
+                    r.DefaultCellStyle.BackColor = System.Drawing.Color.ForestGreen;
+                }
+                else if (score > 0)
+                {
+                    r.DefaultCellStyle.BackColor = System.Drawing.Color.Gold;
+                }
+                else
+                {
+                    r.DefaultCellStyle.BackColor = System.Drawing.Color.IndianRed;
+                }
+            }
+        }
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            updateMappedStatus();
             checkOutputFilenames();
         }
     }

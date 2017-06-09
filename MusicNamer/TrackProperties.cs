@@ -16,6 +16,11 @@ namespace MusicNamer
         public string longFilename;
         public int mappedStatus;
 
+        public TrackProperties()
+        {
+
+        }
+
         public TrackProperties(string longFilename, Track track)
         {
             this.track = track;
@@ -54,8 +59,8 @@ namespace MusicNamer
             if (!isNullOrEmpty(track.track)) score++;
             if (!isNullOrEmpty(track.album)) score++;
             if (!isNullOrEmpty(track.genre)) score++;
-            if (!(track.releaseDate == DateTime.MinValue)) score++;
-            if (score > 4) result = FULLY_MAPPED;
+            //if (!(track.releaseDate == DateTime.MinValue)) score++;
+            if (score > 3) result = FULLY_MAPPED;
             else if (score > 0) result = PARTIALLY_MAPPED;
             else result = NOT_MAPPED;
 
