@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-// TOMMOROW: Need to add tags. and ensure on update of the datagridview that two filenames are not the same
+// TOMMOROW: Need to add tags
 // split artists properly in tags
 // amke tags actually work
 
@@ -93,6 +93,7 @@ namespace MusicNamer
                 {
                     Console.WriteLine($"Folder selected: {fbd.SelectedPath}");
                     textBox_folder.Text = fbd.SelectedPath;
+                    toolStripStatusLabel1.Text = "Running Extractor...";
                     runExtractor();
                 }
             }
@@ -108,6 +109,17 @@ namespace MusicNamer
             if(dataGridView1.RowCount == 0)
             {
                 MessageBox.Show("No files to operate on", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            int outputFilenamesStatus = checkOutputFilenames();
+            if(outputFilenamesStatus == 1)
+            {
+                MessageBox.Show("One or more bad filenames!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (outputFilenamesStatus == 2)
+            {
+                MessageBox.Show("One or more duplicate filenames!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -135,19 +147,24 @@ namespace MusicNamer
                         pathTofile = textBox_outputFolder.Text + "/" + tp.shortFilename + ".mp3";
                         File.Copy(tp.longFilename, pathTofile);
                     }
-                } catch (IOException)
+                } catch (IOException err)
                 {
-                    MessageBox.Show("Two or more output filenames are the same!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Console.WriteLine("Two or more output filenames are the same!");
+                    MessageBox.Show("Attempted to overwrite a file! Make sure the output directory is clear.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Console.WriteLine("Attempted to overwrite a file! Make sure the output directory is clear.");
+                    Console.WriteLine(err.ToString());
                     return;
                 }
 
                 // now tag stuff
                 TagLib.File file = TagLib.File.Create(pathTofile);
-                file.Tag.Album = tp.track.album;
-                file.Tag.Genres = new[] { tp.track.genre };
-                file.Tag.AlbumArtists = new[] { tp.track.artist };
-
+                if (!tp.isNullOrEmpty(tp.track.track)) file.Tag.Title = tp.track.track;
+                if (!tp.isNullOrEmpty(tp.track.album)) file.Tag.Album = tp.track.album;
+                if(!tp.isNullOrEmpty(tp.track.genre)) file.Tag.Genres = new[] { tp.track.genre };
+                if (!tp.isNullOrEmpty(tp.track.artist))
+                {
+                    file.Tag.AlbumArtists = new[] { tp.track.artist };
+                    file.Tag.Artists = new[] { tp.track.artist };
+                }
                 file.Save();
                 file.Dispose();
 
@@ -177,7 +194,15 @@ namespace MusicNamer
 
         private void runExtractor()
         {
-            string[] fileArray = Directory.GetFiles(textBox_folder.Text, "*.mp3", Properties.Settings.Default.importFromSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+            string[] fileArray;
+            try
+            {
+                fileArray = Directory.GetFiles(textBox_folder.Text, "*.mp3", Properties.Settings.Default.importFromSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+            } catch(System.IO.DirectoryNotFoundException)
+            {
+                MessageBox.Show("Input directory does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             Console.WriteLine($"Found {fileArray.Length} mp3 files");
 
@@ -394,6 +419,7 @@ namespace MusicNamer
             DialogResult dialogResult = MessageBox.Show("This will remove any user added data", "Are you sure?", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
+                toolStripStatusLabel1.Text = "Running Extractor...";
                 runExtractor();
             }
             else if (dialogResult == DialogResult.No)
@@ -552,13 +578,13 @@ namespace MusicNamer
                 if (containsMissingTag(textBox_outputFormat.Text, track))
                 {
                     //Console.WriteLine("It's missing");
-                    r.Cells["Output Filename"].Style.BackColor = System.Drawing.Color.IndianRed;
+                    //r.Cells["Output Filename"].Style.BackColor = System.Drawing.Color.Red; // THis is now handled by checkOutputFilenames
                     showMissingError = true;
                 }
             }
             if (showMissingError) MessageBox.Show("Some files were missing tags", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else MessageBox.Show("All files named sucessfully", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+            checkOutputFilenames();
         }
 
         // uses itemList format from Smartformat
@@ -594,6 +620,69 @@ namespace MusicNamer
                     textBox_outputFolder.Text = fbd.SelectedPath;
                 }
             }
+        }
+
+        public int checkOutputFilenames() // returns true if badfilename
+        {
+            if (dataGridView1.RowCount == 0)
+            {
+                return 0;
+            }
+            /*dataGridView1.Columns[0].Name = "Input Filename";
+            dataGridView1.Columns[0].ReadOnly = true;
+            dataGridView1.Columns[1].Name = "Output Filename";
+            dataGridView1.Columns[2].Name = "Track";
+            dataGridView1.Columns[3].Name = "Artist";
+            dataGridView1.Columns[4].Name = "Album";
+            dataGridView1.Columns[5].Name = "Genre";
+            dataGridView1.Columns[6].Name = "DataFrom";
+            dataGridView1.Columns[7].Name = "TagStatus";*/
+            bool badfilename = false;
+            bool duplicateFilename = false;
+            List<string> filenames = new List<string>();
+            foreach (DataGridViewRow r in dataGridView1.Rows)
+            {
+                if(r.Cells["Output Filename"].Value != null)
+                {
+                    if(r.Cells["Output Filename"].Value.ToString().Replace("-","").Replace(".", "").Replace("[", "").Replace("]", "").Trim() == "")
+                    {
+                        r.Cells["Output Filename"].Style.BackColor = System.Drawing.Color.Red;
+                        badfilename = true;
+                    } else
+                    {
+                        // good filename
+                        r.Cells["Output Filename"].Style.BackColor = System.Drawing.Color.ForestGreen;
+                        if(!filenames.Contains(r.Cells["Output Filename"].Value))
+                        {
+                            filenames.Add((string)r.Cells["Output Filename"].Value);
+                        } else
+                        {
+                            duplicateFilename = true;
+                            r.Cells["Output Filename"].Style.BackColor = System.Drawing.Color.DeepPink;
+                            // now we need to go back and set the previous row to this color as well...
+                            foreach (DataGridViewRow r2 in dataGridView1.Rows)
+                            {
+                                if (r.Cells["Output Filename"].Value.ToString().Replace(r2.Cells["Output Filename"].Value.ToString(), "")=="")
+                                { // because apperently the strings don't match on the first instance.. WTF^
+                                    r2.Cells["Output Filename"].Style.BackColor = System.Drawing.Color.DeepPink;
+                                }
+                            }
+                        }
+                    }
+                } else
+                {
+                    r.Cells["Output Filename"].Style.BackColor = System.Drawing.Color.Red;
+                    badfilename = true;
+                }
+            }
+            if (badfilename) return 1;
+            if (duplicateFilename) return 2;
+            return 0;
+    }
+
+        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            checkOutputFilenames();
         }
     }
 

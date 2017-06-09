@@ -62,11 +62,12 @@
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(1004, 727);
+            this.dataGridView1.Size = new System.Drawing.Size(1339, 909);
             this.dataGridView1.TabIndex = 6;
+            this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
             this.dataGridView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.dataGridView1_DragDrop);
             this.dataGridView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.dataGridView1_DragEnter);
             this.dataGridView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dataGridView1_KeyUp);
@@ -76,7 +77,7 @@
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -88,9 +89,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.statusStrip1);
             this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
-            this.splitContainer1.Size = new System.Drawing.Size(1004, 793);
+            this.splitContainer1.Size = new System.Drawing.Size(1339, 976);
             this.splitContainer1.SplitterDistance = 63;
-            this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 8;
             // 
             // tableLayoutPanel1
@@ -113,12 +113,12 @@
             this.tableLayoutPanel1.Controls.Add(this.button_outputFolder, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1004, 63);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1339, 63);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // textBox_outputFormat
@@ -129,11 +129,11 @@
             this.tableLayoutPanel1.SetColumnSpan(this.textBox_outputFormat, 4);
             this.textBox_outputFormat.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox_outputFormat.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_outputFormat.Location = new System.Drawing.Point(578, 33);
-            this.textBox_outputFormat.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_outputFormat.Location = new System.Drawing.Point(651, 33);
+            this.textBox_outputFormat.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_outputFormat.Multiline = true;
             this.textBox_outputFormat.Name = "textBox_outputFormat";
-            this.textBox_outputFormat.Size = new System.Drawing.Size(424, 28);
+            this.textBox_outputFormat.Size = new System.Drawing.Size(685, 28);
             this.textBox_outputFormat.TabIndex = 11;
             this.textBox_outputFormat.Text = "{Track} - {Artist}";
             // 
@@ -143,10 +143,10 @@
             this.button_openFolder.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_openFolder.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button_openFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_openFolder.Location = new System.Drawing.Point(2, 2);
-            this.button_openFolder.Margin = new System.Windows.Forms.Padding(2);
+            this.button_openFolder.Location = new System.Drawing.Point(3, 2);
+            this.button_openFolder.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button_openFolder.Name = "button_openFolder";
-            this.button_openFolder.Size = new System.Drawing.Size(81, 27);
+            this.button_openFolder.Size = new System.Drawing.Size(105, 27);
             this.button_openFolder.TabIndex = 0;
             this.button_openFolder.Text = "Input Folder";
             this.button_openFolder.UseVisualStyleBackColor = true;
@@ -159,11 +159,11 @@
             this.textBox_folder.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.RecentlyUsedList;
             this.textBox_folder.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox_folder.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_folder.Location = new System.Drawing.Point(87, 2);
-            this.textBox_folder.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_folder.Location = new System.Drawing.Point(114, 2);
+            this.textBox_folder.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_folder.Multiline = true;
             this.textBox_folder.Name = "textBox_folder";
-            this.textBox_folder.Size = new System.Drawing.Size(487, 27);
+            this.textBox_folder.Size = new System.Drawing.Size(531, 27);
             this.textBox_folder.TabIndex = 1;
             this.textBox_folder.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox_folder_DragDrop);
             this.textBox_folder.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox_folder_DragEnter);
@@ -173,10 +173,10 @@
             this.generateOutputFilenames.AutoSize = true;
             this.generateOutputFilenames.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.generateOutputFilenames.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.generateOutputFilenames.Location = new System.Drawing.Point(681, 2);
-            this.generateOutputFilenames.Margin = new System.Windows.Forms.Padding(2);
+            this.generateOutputFilenames.Location = new System.Drawing.Point(784, 2);
+            this.generateOutputFilenames.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.generateOutputFilenames.Name = "generateOutputFilenames";
-            this.generateOutputFilenames.Size = new System.Drawing.Size(146, 27);
+            this.generateOutputFilenames.Size = new System.Drawing.Size(193, 27);
             this.generateOutputFilenames.TabIndex = 2;
             this.generateOutputFilenames.Text = "Generate Output Filenames";
             this.generateOutputFilenames.UseVisualStyleBackColor = true;
@@ -188,10 +188,10 @@
             this.button_export.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_export.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button_export.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_export.Location = new System.Drawing.Point(831, 2);
-            this.button_export.Margin = new System.Windows.Forms.Padding(2);
+            this.button_export.Location = new System.Drawing.Point(983, 2);
+            this.button_export.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button_export.Name = "button_export";
-            this.button_export.Size = new System.Drawing.Size(61, 27);
+            this.button_export.Size = new System.Drawing.Size(77, 27);
             this.button_export.TabIndex = 5;
             this.button_export.Text = "Export All";
             this.button_export.UseVisualStyleBackColor = true;
@@ -202,10 +202,10 @@
             this.reRun.AutoSize = true;
             this.reRun.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.reRun.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.reRun.Location = new System.Drawing.Point(578, 2);
-            this.reRun.Margin = new System.Windows.Forms.Padding(2);
+            this.reRun.Location = new System.Drawing.Point(651, 2);
+            this.reRun.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.reRun.Name = "reRun";
-            this.reRun.Size = new System.Drawing.Size(99, 27);
+            this.reRun.Size = new System.Drawing.Size(127, 27);
             this.reRun.TabIndex = 7;
             this.reRun.Text = "Re-Run Extractor";
             this.reRun.UseVisualStyleBackColor = true;
@@ -216,10 +216,10 @@
             this.button_settings.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button_settings.BackgroundImage")));
             this.button_settings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button_settings.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button_settings.Location = new System.Drawing.Point(896, 2);
-            this.button_settings.Margin = new System.Windows.Forms.Padding(2);
+            this.button_settings.Location = new System.Drawing.Point(1066, 2);
+            this.button_settings.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button_settings.Name = "button_settings";
-            this.button_settings.Size = new System.Drawing.Size(106, 27);
+            this.button_settings.Size = new System.Drawing.Size(270, 27);
             this.button_settings.TabIndex = 8;
             this.button_settings.UseVisualStyleBackColor = true;
             this.button_settings.Click += new System.EventHandler(this.button_settings_Click);
@@ -231,11 +231,11 @@
             this.textBox_outputFolder.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.RecentlyUsedList;
             this.textBox_outputFolder.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox_outputFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_outputFolder.Location = new System.Drawing.Point(87, 33);
-            this.textBox_outputFolder.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_outputFolder.Location = new System.Drawing.Point(114, 33);
+            this.textBox_outputFolder.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_outputFolder.Multiline = true;
             this.textBox_outputFolder.Name = "textBox_outputFolder";
-            this.textBox_outputFolder.Size = new System.Drawing.Size(487, 28);
+            this.textBox_outputFolder.Size = new System.Drawing.Size(531, 28);
             this.textBox_outputFolder.TabIndex = 9;
             // 
             // button_outputFolder
@@ -244,10 +244,10 @@
             this.button_outputFolder.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.button_outputFolder.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button_outputFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_outputFolder.Location = new System.Drawing.Point(2, 33);
-            this.button_outputFolder.Margin = new System.Windows.Forms.Padding(2);
+            this.button_outputFolder.Location = new System.Drawing.Point(3, 33);
+            this.button_outputFolder.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button_outputFolder.Name = "button_outputFolder";
-            this.button_outputFolder.Size = new System.Drawing.Size(81, 28);
+            this.button_outputFolder.Size = new System.Drawing.Size(105, 28);
             this.button_outputFolder.TabIndex = 10;
             this.button_outputFolder.Text = "Output Folder";
             this.button_outputFolder.UseVisualStyleBackColor = true;
@@ -258,26 +258,26 @@
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 705);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 884);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(1004, 22);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 13, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(1339, 25);
             this.statusStrip1.TabIndex = 7;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(151, 20);
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1004, 793);
+            this.ClientSize = new System.Drawing.Size(1339, 976);
             this.Controls.Add(this.splitContainer1);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
