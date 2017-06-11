@@ -8,10 +8,9 @@ using System.Windows.Forms;
 using TagLib;
 
 // TODO:
-// split artists properly in tags
 // dealing with featured artists
 // feat. in the artist segment
-// outputting to subfolder-artist/subfolder-album/track
+// [Monstercat Relasse] has artist and track swapped
 
 namespace MusicNamer
 {
@@ -96,7 +95,6 @@ namespace MusicNamer
                 {
                     Console.WriteLine($"Folder selected: {fbd.SelectedPath}");
                     textBox_folder.Text = fbd.SelectedPath;
-                    toolStripStatusLabel1.Text = "Running Extractor...";
                     runExtractor();
                 }
             }
@@ -139,7 +137,27 @@ namespace MusicNamer
                 string pathTofile;
                 try
                 {
-                    if (Properties.Settings.Default.exportToFolders)
+                    if(Properties.Settings.Default.exportToFolders)
+                    {
+                        if (tp.isNullOrEmpty(tp.track.artist))
+                        {
+                            MessageBox.Show("Artist is missing on a track! (Trying to export to Artist/(Album/)Outputfilename", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                    if(Properties.Settings.Default.exportToAlbumFolders)
+                    {
+                        if(tp.isNullOrEmpty(tp.track.album))
+                        {
+                            MessageBox.Show("Album is missing on a track! (Trying to export to Artist/Album/Outputfilename", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        Directory.CreateDirectory(textBox_outputFolder.Text + "/" + tp.track.artist);
+                        Directory.CreateDirectory(textBox_outputFolder.Text + "/" + tp.track.artist + "/" + tp.track.album);
+                        pathTofile = textBox_outputFolder.Text + "/" + tp.track.artist + "/" + tp.track.album + "/" + tp.shortFilename + ".mp3";
+                        System.IO.File.Copy(tp.longFilename, pathTofile);
+                    }
+                    else if (Properties.Settings.Default.exportToFolders)
                     {
                         Directory.CreateDirectory(textBox_outputFolder.Text + "/" + tp.track.artist);
                         pathTofile = textBox_outputFolder.Text + "/" + tp.track.artist + "/" + tp.shortFilename + ".mp3";
@@ -227,9 +245,12 @@ namespace MusicNamer
             Console.WriteLine($"Found {fileArray.Length} mp3 files");
 
             toolStripStatusLabel1.Text = $"Found {fileArray.Length} mp3 files";
+            statusStrip1.Update();
 
             //------------------------------------------------------------------------------
 
+            toolStripStatusLabel1.Text = $"Finding extractors...";
+            statusStrip1.Update();
             List<TokenExtractor> teList = new List<TokenExtractor>();
             
             string[] tokenExtractorFileArray = Directory.GetFiles("extractors/", "*.json", SearchOption.AllDirectories);
@@ -286,8 +307,10 @@ namespace MusicNamer
                 inputFiles[s].shortFilename = Path.GetFileNameWithoutExtension(s);
             }
 
-            toolStripStatusLabel1.Text = $"Extracting/Finding tags...";
+            toolStripStatusLabel1.Text = $"Extracting/searching for tags...";
+            statusStrip1.Update();
 
+            bool noInternet = false;
             foreach (KeyValuePair<string, TrackProperties> inputFile in inputFiles)
             {
                 foreach (TokenExtractor te in teList)
@@ -327,6 +350,11 @@ namespace MusicNamer
                     if (!inputFile.Value.isNullOrEmpty(inputFile.Value.track.album)) keywords.Add(inputFile.Value.track.album);
 
                     Track[] suggestedTracks = md.getSuggestedSongs(keywords.ToArray(), 5); // number is PER API
+                    if(suggestedTracks==null)
+                    {
+                        noInternet = true;
+                        continue;
+                    }
 
                     if (suggestedTracks.Length > 0) // make sure we have at least one suggested track
                     {
@@ -402,9 +430,47 @@ namespace MusicNamer
                     }
                 }
             }
+
+            if(noInternet)
+            {
+                MessageBox.Show("Cannot connect to the internet!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             // --------------------------------------------------------------------
 
-            toolStripStatusLabel1.Text = $"Finished";
+
+            // let's move featured stuff into the track name if it's in the artist
+            foreach (KeyValuePair<string, TrackProperties> inputFile in inputFiles)
+            {
+                if (isNullOrEmpty(inputFile.Value.track.artist)) { // yes I know this could be simplified...(regex)
+                    if (inputFile.Value.track.artist.Contains("(ft.", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Regex regex = new Regex(string.Format(@"\(ft\..*\)"));
+                        inputFile.Value.track.artist = regex.Replace(inputFile.Value.track.artist, string.Empty).Trim();
+                        // TODO: then add ft. to trackname or whatever
+                    } else if (inputFile.Value.track.artist.Contains("ft.", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Regex regex = new Regex(string.Format(@"ft\..*"));
+                        inputFile.Value.track.artist = regex.Replace(inputFile.Value.track.artist, string.Empty).Trim();
+                        // TODO: then add ft. to trackname or whatever
+                    }
+                    if (inputFile.Value.track.artist.Contains("(feat.", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Regex regex = new Regex(string.Format(@"\(feat\..*\)"));
+                        inputFile.Value.track.artist = regex.Replace(inputFile.Value.track.artist, string.Empty).Trim();
+                        // TODO: then add ft. to trackname or whatever
+                    }
+                    else if(inputFile.Value.track.artist.Contains("feat.", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Regex regex = new Regex(string.Format(@"\(feat\..*"));
+                        inputFile.Value.track.artist = regex.Replace(inputFile.Value.track.artist, string.Empty).Trim();
+                        // TODO: then add ft. to trackname or whatever
+                    }
+                }
+            }
+
+
+            toolStripStatusLabel1.Text = $"Updating table...";
+            statusStrip1.Update();
 
 
             dataGridView1.Rows.Clear();
@@ -432,6 +498,9 @@ namespace MusicNamer
                     dataGridView1[7, dataGridView1.Rows.GetLastRow(DataGridViewElementStates.None)].Value = "Full";
                 }
             }
+
+            toolStripStatusLabel1.Text = $"Finished";
+            statusStrip1.Update();
         }
 
         private void reRun_click(object sender, EventArgs e)
@@ -439,7 +508,6 @@ namespace MusicNamer
             DialogResult dialogResult = MessageBox.Show("This will remove any user added data", "Are you sure?", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
-                toolStripStatusLabel1.Text = "Running Extractor...";
                 runExtractor();
             }
             else if (dialogResult == DialogResult.No)
@@ -455,6 +523,7 @@ namespace MusicNamer
             popup.ShowDialog();
             popup.Dispose();
             toolStripStatusLabel1.Text = "";
+            checkOutputFilenames();
         }
 
         private void textBox_folder_DragDrop(object sender, DragEventArgs e)
@@ -652,7 +721,7 @@ namespace MusicNamer
             }
         }
 
-        private int checkOutputFilenames() // returns true if badfilename
+        private int checkOutputFilenames() // returns true if badfilename and highlights all missing stuff for export
         {
             if (dataGridView1.RowCount == 0)
             {
@@ -696,6 +765,35 @@ namespace MusicNamer
                     r.Cells["Output Filename"].Style.BackColor = System.Drawing.Color.Red;
                     badfilename = true;
                 }
+
+                if (Properties.Settings.Default.exportToFolders)
+                {
+                    if (isNullOrEmpty(r.Cells["Artist"].Value))
+                    {
+                        r.Cells["Artist"].Style.BackColor = System.Drawing.Color.Red;
+                    }
+                    else
+                    {
+                        if (isNullOrEmpty(r.Cells["Artist"].Value.ToString().Trim()))
+                        {
+                            r.Cells["Artist"].Style.BackColor = System.Drawing.Color.Red;
+                        }
+                    }
+                }
+                if (Properties.Settings.Default.exportToAlbumFolders)
+                {
+                    if (isNullOrEmpty(r.Cells["Album"].Value))
+                    {
+                        r.Cells["Album"].Style.BackColor = System.Drawing.Color.Red;
+                    }
+                    else
+                    {
+                        if (isNullOrEmpty(r.Cells["Album"].Value.ToString().Trim()))
+                        {
+                            r.Cells["Album"].Style.BackColor = System.Drawing.Color.Red;
+                        }
+                    }
+                }
             }
             if (badfilename) return 1;
             if (duplicateFilename) return 2;
@@ -722,17 +820,23 @@ namespace MusicNamer
                 if (!isNullOrEmpty(r.Cells["Track"].Value)) score++;
                 if (!isNullOrEmpty(r.Cells["Album"].Value)) score++;
                 if (!isNullOrEmpty(r.Cells["Genre"].Value)) score++;
+
+                System.Drawing.Color color;
                 if (score > 3)
                 {
-                    r.DefaultCellStyle.BackColor = System.Drawing.Color.ForestGreen;
+                    color = System.Drawing.Color.ForestGreen;
                 }
                 else if (score > 0)
                 {
-                    r.DefaultCellStyle.BackColor = System.Drawing.Color.Gold;
+                    color = System.Drawing.Color.Gold;
                 }
                 else
                 {
-                    r.DefaultCellStyle.BackColor = System.Drawing.Color.IndianRed;
+                    color = System.Drawing.Color.IndianRed;
+                }
+                foreach (DataGridViewCell dgc in r.Cells)
+                {
+                    dgc.Style.BackColor = color;
                 }
             }
         }

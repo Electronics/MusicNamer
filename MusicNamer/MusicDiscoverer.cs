@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MusicNamer
 {
@@ -52,11 +53,19 @@ namespace MusicNamer
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestURL);
             request.AutomaticDecompression = DecompressionMethods.GZip;
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
+            try
             {
-                html = reader.ReadToEnd();
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    html = reader.ReadToEnd();
+                }
+            }
+            catch (System.Net.WebException)
+            {
+                // messagebox will be shown from a different function
+                return null;
             }
 
             return JObject.Parse(html);
@@ -164,6 +173,11 @@ namespace MusicNamer
             {
                 //Console.WriteLine($"Using api {api.name}");
                 JObject rawData = api.getRawInformation(keywords);
+                if (rawData == null)
+                {
+                    return null;
+                }
+
                 int numResults = Math.Min(suggestionCount, (int)rawData["resultCount"]);
 
                 Track[] tracks = new Track[numResults];

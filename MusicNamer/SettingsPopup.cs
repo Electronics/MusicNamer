@@ -19,6 +19,8 @@ namespace MusicNamer
             Console.WriteLine("Settings Opened");
             checkBox_exportFolders.Checked = Properties.Settings.Default.exportToFolders;
             checkBox_importFromSubfolders.Checked = Properties.Settings.Default.importFromSubfolders;
+            checkBox_artistFolders.Checked = Properties.Settings.Default.exportToAlbumFolders;
+            updateCheckBoxArtistFolders();
 
             // find out what extractors we have and compare against settings list
             System.Collections.Specialized.StringCollection sc_extractors = Properties.Settings.Default.disabledExtractors;
@@ -68,6 +70,7 @@ namespace MusicNamer
             Console.WriteLine("Clicked ok");
 
             Properties.Settings.Default.exportToFolders = checkBox_exportFolders.Checked;
+            if (checkBox_exportFolders.Checked) Properties.Settings.Default.exportToAlbumFolders = checkBox_artistFolders.Checked;
             Properties.Settings.Default.importFromSubfolders = checkBox_importFromSubfolders.Checked;
             Properties.Settings.Default.disabledExtractors = new System.Collections.Specialized.StringCollection();
             if (checkedListBox_disabledExtractors.CheckedItems.Count != 0)
@@ -90,6 +93,21 @@ namespace MusicNamer
         {
             Console.WriteLine("Cancel clicked");
             this.Close();
+        }
+
+        private void checkBox_exportFolders_CheckedChanged(object sender, EventArgs e)
+        {
+            updateCheckBoxArtistFolders();
+        }
+
+        private void updateCheckBoxArtistFolders()
+        {
+            if (checkBox_exportFolders.Checked) checkBox_artistFolders.Enabled = true;
+            else
+            {
+                checkBox_artistFolders.Enabled = false;
+                checkBox_artistFolders.Checked = false;
+            }
         }
     }
 }

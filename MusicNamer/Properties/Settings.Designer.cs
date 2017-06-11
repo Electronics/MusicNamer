@@ -80,5 +80,17 @@ namespace MusicNamer.Properties {
                 this["importFromSubfolders"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool exportToAlbumFolders {
+            get {
+                return ((bool)(this["exportToAlbumFolders"]));
+            }
+            set {
+                this["exportToAlbumFolders"] = value;
+            }
+        }
     }
 }
