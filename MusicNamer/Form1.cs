@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -317,9 +318,8 @@ namespace MusicNamer
                 {
                     if (inputFile.Value.addTrackIfNotNull(te.extractProperties(inputFile.Value.shortFilename)))
                     {
-                        inputFile.Value.track.track = inputFile.Value.track.track.Replace("ft.", "feat.");
+                        inputFile.Value.track.track = Regex.Replace(inputFile.Value.track.track, "feat.", "ft.", RegexOptions.IgnoreCase);
                         inputFile.Value.track.dataFrom = "Extracted";
-                        //TODO: insert if feat./ft. is in artist section? (also in section below btw)
                         break;
                     }
                 }
@@ -337,12 +337,12 @@ namespace MusicNamer
                     }
                     else
                     {
-                        title = inputFile.Value.shortFilename.Replace("ft.", "feat.");
+                        title = Regex.Replace(inputFile.Value.shortFilename,"feat.", "ft.", RegexOptions.IgnoreCase);
                     }
                     title = RemoveBetween(title, '[', ']');
                     title = RemoveBetween(title, '(', ')');
-                    // it should always be feat. now
-                    int index = title.IndexOf("feat.");
+                    // it should always be ft. now
+                    int index = title.IndexOf("ft.");
                     if (index > 0) title = title.Substring(0, index);
                     title = title.Trim();
                     keywords.AddRange(title.Split(new[] { "  " }, StringSplitOptions.RemoveEmptyEntries));
@@ -441,28 +441,36 @@ namespace MusicNamer
             // let's move featured stuff into the track name if it's in the artist
             foreach (KeyValuePair<string, TrackProperties> inputFile in inputFiles)
             {
-                if (isNullOrEmpty(inputFile.Value.track.artist)) { // yes I know this could be simplified...(regex)
+                if (!isNullOrEmpty(inputFile.Value.track.artist)) {
                     if (inputFile.Value.track.artist.Contains("(ft.", StringComparison.OrdinalIgnoreCase))
                     {
                         Regex regex = new Regex(string.Format(@"\(ft\..*\)"));
+                        string featuredArtist = getBetween(inputFile.Value.track.artist, "(ft. ", ")").Trim();
+                        Console.WriteLine("Found featured artist: " + featuredArtist);
                         inputFile.Value.track.artist = regex.Replace(inputFile.Value.track.artist, string.Empty).Trim();
-                        // TODO: then add ft. to trackname or whatever
+                        // now add the feat. to trackname
+                        inputFile.Value.track.track += " (ft. " + featuredArtist + ")";
                     } else if (inputFile.Value.track.artist.Contains("ft.", StringComparison.OrdinalIgnoreCase))
                     {
-                        Regex regex = new Regex(string.Format(@"ft\..*"));
-                        inputFile.Value.track.artist = regex.Replace(inputFile.Value.track.artist, string.Empty).Trim();
+                        /*Regex regex = new Regex(string.Format(@"ft\..*"));
+                        string featuredArtist = inputFile.Value.track.artist.Substring(inputFile.Value.track.artist.IndexOf(("ft.") + 3));
+                        Console.WriteLine("LOLOL: Found featured artist: " + featuredArtist);
+                        inputFile.Value.track.artist = regex.Replace(inputFile.Value.track.artist, string.Empty).Trim();*/
                         // TODO: then add ft. to trackname or whatever
                     }
                     if (inputFile.Value.track.artist.Contains("(feat.", StringComparison.OrdinalIgnoreCase))
                     {
                         Regex regex = new Regex(string.Format(@"\(feat\..*\)"));
+                        string featuredArtist = getBetween(inputFile.Value.track.artist, "(feat. ", ")").Trim();
+                        Console.WriteLine("Found featured artist: " + featuredArtist);
                         inputFile.Value.track.artist = regex.Replace(inputFile.Value.track.artist, string.Empty).Trim();
-                        // TODO: then add ft. to trackname or whatever
+                        // now add the feat. to trackname
+                        inputFile.Value.track.track += " (ft. " + featuredArtist + ")";
                     }
                     else if(inputFile.Value.track.artist.Contains("feat.", StringComparison.OrdinalIgnoreCase))
                     {
-                        Regex regex = new Regex(string.Format(@"\(feat\..*"));
-                        inputFile.Value.track.artist = regex.Replace(inputFile.Value.track.artist, string.Empty).Trim();
+                        /*Regex regex = new Regex(string.Format(@"\(feat\..*"));
+                        inputFile.Value.track.artist = regex.Replace(inputFile.Value.track.artist, string.Empty).Trim();*/
                         // TODO: then add ft. to trackname or whatever
                     }
                 }
@@ -523,6 +531,7 @@ namespace MusicNamer
             popup.ShowDialog();
             popup.Dispose();
             toolStripStatusLabel1.Text = "";
+            updateMappedStatus();
             checkOutputFilenames();
         }
 
@@ -707,6 +716,21 @@ namespace MusicNamer
             }
         }
 
+        public static string getBetween(string strSource, string strStart, string strEnd)
+        {
+            int Start, End;
+            if (strSource.Contains(strStart, StringComparison.OrdinalIgnoreCase) && strSource.Contains(strEnd, StringComparison.OrdinalIgnoreCase))
+            {
+                Start = strSource.IndexOf(strStart, 0, StringComparison.OrdinalIgnoreCase) + strStart.Length;
+                End = strSource.IndexOf(strEnd, Start, StringComparison.OrdinalIgnoreCase);
+                return strSource.Substring(Start, End - Start);
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         private void button_outputFolder_Click(object sender, EventArgs e)
         {
             using (var fbd = new FolderBrowserDialog())
@@ -748,12 +772,15 @@ namespace MusicNamer
                             filenames.Add((string)r.Cells["Output Filename"].Value);
                         } else
                         {
+                            if (Properties.Settings.Default.exportToFolders && !textBox_outputFormat.Text.Contains("Artist"))
+                                continue;
                             duplicateFilename = true;
                             r.Cells["Output Filename"].Style.BackColor = System.Drawing.Color.DeepPink;
                             // now we need to go back and set the previous row to this color as well...
                             foreach (DataGridViewRow r2 in dataGridView1.Rows)
                             {
-                                if (r.Cells["Output Filename"].Value.ToString().Replace(r2.Cells["Output Filename"].Value.ToString(), "")=="")
+                                //if (r.Cells["Output Filename"].Value.ToString().Replace(r2.Cells["Output Filename"].Value.ToString(), "") == "")
+                                    if (r.Cells["Output Filename"].Value.ToString().Equals(r2.Cells["Output Filename"].Value.ToString()))
                                 { // because apperently the strings don't match on the first instance.. WTF^
                                     r2.Cells["Output Filename"].Style.BackColor = System.Drawing.Color.DeepPink;
                                 }

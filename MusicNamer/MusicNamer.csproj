@@ -104,13 +104,13 @@
     <None Include="apis\apple.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="extractors\Artist-Album - Comment.json">
+    <None Include="extractors\Track-Artist- Comment.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="extractors\Artist-Album_LyricVideo.json">
+    <None Include="extractors\Track-Artist_LyricVideo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="extractors\Artist-Album.json">
+    <None Include="extractors\Track - Artist.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="extractors\monstercat.json">
